@@ -1,0 +1,32 @@
+h1. Flewton
+
+Flewton is an extensible Netflow collector.
+
+h2. Configuration
+
+Refer to the comments in the sample configuration shipped with Flewton.
+
+h2. Running
+
+In a nutshell:
+
+bc. 
+java [options] -jar flewton.jar
+
+By default, Flewton will search for its configuration file as @/etc/flewton/flewton.cfg@, @/etc/flewton.cfg@, and @./flewton.cfg@, using the first one found.  You can specify a path to your configuration using the @flewton.config@ system property, for example:
+
+bc. 
+java -Dflewton.config=/usr/local/etc/flewton.cfg -jar flewton.jar
+
+Flewton uses "log4j":http://logging.apache.org/log4j/1.2 for logging.  By default, the log level is @INFO@ and output is sent to stdout. To customize logging, create your own log4j.properties and set the @log4j.configuration@ system property:
+
+bc. 
+java -Dlog4j.configuration=file:///path/to/log4.props -jar flewton.jar
+
+h2. Known Issues
+
+* Currently only Netflow v5 is supported, but additional Netflow formats are possible by implementing decoder classes as @com.rackspace.flewton.RecordvN@ (where @N@ is the version). See @com.rackspace.flewton.Recordv5@ for an example. Patches welcome.
+
+h2. About
+
+Flewton was developed by "Gary Dusbabek":mailto:gary.dusbabek@rackspace.com and "Eric Evans":mailto:eevans@rackspace.com and open-source by "Rackspace":http://www.rackspace.com.

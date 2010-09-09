@@ -1,0 +1,3 @@
+
+* Eliminate dependency on com.eaio.uuid.UUIDGen (c.r.f.u.UUIDGen?).
+* Include a (tested )v9 protocol decoder.
