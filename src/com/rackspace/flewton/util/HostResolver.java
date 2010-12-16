@@ -40,7 +40,7 @@ public class HostResolver {
     private final List<Block> internalBlocks = new ArrayList<Block>(); 
     
     public HostResolver(HierarchicalConfiguration config) {
-        for (String desc : config.getStringArray("block"))
+        for (String desc : config.getStringArray("network"))
             internalBlocks.add(new Block(desc));
     }
     
