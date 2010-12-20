@@ -1,7 +1,13 @@
 #!/usr/bin/make -f
 
+VERSION = $(shell dpkg-parsechangelog|sed -ne 's/^Version: \(.\+\)\-.\+/\1/p')
+
 %:
 	dh $@
 
 build:
 	ant dist
+
+override_dh_link:
+	dh_link usr/share/flewton/flewton-$(VERSION).jar \
+		usr/share/flewton/flewton.jar

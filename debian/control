@@ -9,7 +9,7 @@ Standards-Version: 3.9.1
 
 Package: flewton
 Architecture: all
-Depends: ${misc:Depends}, openjdk-6-jre-headless (>= 6b11) | java6-runtime
+Depends: ${misc:Depends}, openjdk-6-jre-headless (>= 6b11) | java6-runtime, lsb-base (>= 3.2-14), jsvc (>= 1.0)
 Description: an extensible netflow collector
  Flewton is a framework for the collection, analysis, processing, and
  storage of Netflow information.  Plugins can be written in Java, Python,
