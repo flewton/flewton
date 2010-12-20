@@ -1,0 +1,16 @@
+Source: flewton
+Section: misc
+Priority: extra
+Maintainer: Eric Evans <eevans@sym-link.com>
+Build-Depends: debhelper (>= 7.0.50), openjdk-6-jdk (>= 6b11) | java6-sdk, ant (>= 1.7)
+Vcs-Git: git://github.com/flewton/flewton.git
+Vcs-Browser: https://github.com/flewton/flewton
+Standards-Version: 3.9.1
+
+Package: flewton
+Architecture: all
+Depends: ${misc:Depends}, openjdk-6-jre-headless (>= 6b11) | java6-runtime
+Description: an extensible netflow collector
+ Flewton is a framework for the collection, analysis, processing, and
+ storage of Netflow information.  Plugins can be written in Java, Python,
+ and Javascript.

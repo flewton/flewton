@@ -1,0 +1,4 @@
+dist/flewton-*.jar usr/share/flewton
+dist/lib/*.jar usr/share/flewton/lib
+flewton.cfg etc/flewton
+debian/log4j.properties etc/flewton
