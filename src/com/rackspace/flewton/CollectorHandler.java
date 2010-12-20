@@ -69,6 +69,7 @@ public class CollectorHandler extends SimpleChannelHandler {
                     break;
                 default:
                     if (logUnhandledVersions) {
+                        // this means the record stays null. we need to check for that when handling.
                         logger.warn(String.format("Netflow v%d is not supported", version));
                         if (logger.isDebugEnabled())
                             logPacket(e.getRemoteAddress(), buff.duplicate());
@@ -82,8 +83,9 @@ public class CollectorHandler extends SimpleChannelHandler {
         }
         
         // Send record to backends
-        for (AbstractBackend backend : backEnds)
-            backend.write(record);
+        if (record != null)
+            for (AbstractBackend backend : backEnds)
+                backend.write(record);
     }
     
     // dumps the contents of a buffer
