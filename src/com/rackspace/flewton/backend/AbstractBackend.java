@@ -33,7 +33,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import com.rackspace.flewton.AbstractRecord;
 
-public abstract class AbstractBackend {
+public abstract class AbstractBackend implements IBackend {
     public AbstractBackend(HierarchicalConfiguration config) {
 
     }

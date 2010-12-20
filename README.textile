@@ -23,10 +23,33 @@ Flewton uses "log4j":http://logging.apache.org/log4j/1.2 for logging.  By defaul
 bc. 
 java -Dlog4j.configuration=file:///path/to/log4.props -jar flewton.jar
 
+h2. Implementing backends in other languages
+
+Backends can  be implemented in several languages. We currently support:
+* Python
+* Javascript
+
+There are three ways you can tell Flewton about your external backends:
+1.  Place them in @/etc/flewton@.
+2.  Run flewton with @-Dflewton.backend_path@, placing your external backends in that directory.
+3.  Include your backends in the classpath so they can be loaded as resources by the classloader.
+
+Identify your external backends in @flewton.cfg@ by using their entire names, e.g.: @js/my/AwesomeBackend.js@ or @py/my/CoolerBackend.py@.  The default cfg that ships with flewton contains a few commented out examples, the source for which can also be found in the Flewton source code.
+
+h3. Python
+
+* Your class should extend @AbstractBackend@.
+* Your class should have an @__init__@ method that accepts an instance of @HierarchicalConfiguration@.
+* Module names must begin with '@py/@' to be properly identified as python. E.g.: @py/my/module/path/Foo.py@
+
+h3. Javascript
+
+* Your javascript should export two methods: @init(config)@ and @write(record)@. The class types for @config@ and @record@ are the same as they would be in Java.
+
 h2. Known Issues
 
 * Currently only Netflow v5 is supported, but additional Netflow formats are possible by implementing decoder classes as @com.rackspace.flewton.RecordvN@ (where @N@ is the version). See @com.rackspace.flewton.Recordv5@ for an example. Patches welcome.
 
 h2. About
 
-Flewton was developed by "Gary Dusbabek":mailto:gary.dusbabek@rackspace.com and "Eric Evans":mailto:eevans@rackspace.com and open-source by "Rackspace":http://www.rackspace.com.
+Flewton was developed by "Gary Dusbabek":mailto:gary.dusbabek@rackspace.com and "Eric Evans":mailto:eevans@rackspace.com and made open-source by "Rackspace":http://www.rackspace.com.
