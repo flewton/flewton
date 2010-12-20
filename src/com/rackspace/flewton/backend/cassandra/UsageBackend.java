@@ -47,6 +47,7 @@ import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.thrift.TException;
+import org.apache.thrift.transport.TSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +183,8 @@ public class UsageBackend extends AbstractBackend {
         try {
             client.batch_mutate(mutations, ConsistencyLevel.ONE);
         } catch (TException texcep) {
+            logger.warn("Exception encountered writing to {}",
+                        ((TSocket)client.getInputProtocol().getTransport()).getSocket().getInetAddress().getHostAddress());
             reuseClient = false;
             invalidateClient(client);
             throw texcep;
