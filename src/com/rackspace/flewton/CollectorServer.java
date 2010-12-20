@@ -65,6 +65,8 @@ public class CollectorServer {
         };
     }
     
+    private int remotePort;
+    
     private static List<AbstractBackend> createBackends(String[] backendNames, HierarchicalINIConfiguration config) throws ConfigError {
         List<AbstractBackend> backends = new ArrayList<AbstractBackend>();
         
@@ -134,16 +136,30 @@ public class CollectorServer {
     }
     
     public static void main(String[] args) throws ConfigurationException, ConfigError {
+        CollectorServer server = new CollectorServer();
+        server.setup();
+        server.start();
+    }
+    
+    public void setup() throws ConfigurationException, ConfigError {
         HierarchicalINIConfiguration config = createConfig();
         
         // UDP port number.
-        int remotePort = config.getInt("listenPort", 9995);
+        remotePort = config.getInt("listenPort", 9995);
         // Backend class names
         String[] backEnds = config.getStringArray("backendClass");
 
         if (backEnds.length > 0)
             CollectorHandler.setBackends(createBackends(backEnds, config));
-        
+    }
+    
+    /* jsvc */
+    public void init(String[] arguments) throws ConfigurationException, ConfigError {
+        setup();
+    }
+    
+    /* jsvc */
+    public void start() {
         DatagramChannelFactory f = new NioDatagramChannelFactory(Executors.newCachedThreadPool());
         ConnectionlessBootstrap bootstrap = new ConnectionlessBootstrap(f);
         
@@ -163,6 +179,16 @@ public class CollectorServer {
 
         logger.info("Binding to UDP 0.0.0.0:{}", remotePort);
         bootstrap.bind(new InetSocketAddress(remotePort));
+    }
+    
+    /* jsvc */
+    public void stop() {
+        
+    }
+    
+    /* jsvc */
+    public void destroy() {
+        
     }
 
 }
