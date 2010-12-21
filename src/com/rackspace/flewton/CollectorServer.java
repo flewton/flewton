@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import com.rackspace.flewton.backend.ExtBackendFactory;
+import com.rackspace.flewton.backend.IBackend;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
@@ -66,16 +68,23 @@ public class CollectorServer {
     }
     
     private int remotePort;
-    
-    private static List<AbstractBackend> createBackends(String[] backendNames, HierarchicalINIConfiguration config) throws ConfigError {
-        List<AbstractBackend> backends = new ArrayList<AbstractBackend>();
+
+    private static List<IBackend> createBackends(String[] backendNames, HierarchicalINIConfiguration config) throws ConfigError {
+        List<IBackend> backends = new ArrayList<IBackend>();
         
         for (String name : backendNames) {
             try {
                 logger.info("Adding backend: {}", name);
-                Class<?> backendClass = Class.forName(name.replace('/', '.'));
+                IBackend backend = null;
                 SubnodeConfiguration subConfig = config.getSection(name.replace('.', '/'));
-                AbstractBackend backend = (AbstractBackend)backendClass.getConstructor(HierarchicalConfiguration.class).newInstance(subConfig);
+                if (name.startsWith("py/"))
+                    backend = ExtBackendFactory.createPythonBackend(name, config);
+                else if (name.startsWith("js/"))
+                    backend = ExtBackendFactory.createJavascriptBackend(name, config);
+                else {
+                    Class<?> backendClass = Class.forName(name.replace('/', '.'));
+                    backend = (AbstractBackend)backendClass.getConstructor(HierarchicalConfiguration.class).newInstance(subConfig);
+                }
                 backends.add(backend);
             } catch (ClassNotFoundException e) {
                 logger.error("Backend not found: {} (not in classpath?)", name);
