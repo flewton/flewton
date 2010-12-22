@@ -36,8 +36,6 @@ import java.util.Random;
 
 /**
  * The goods are here: www.ietf.org/rfc/rfc4122.txt.
- * NOTE: One instance of UUIDGen on a MacbookPro (2010) can generate 10k unique uuids per millisecond. If you need more,
- * use another instance of UUIDGen, which is guaranteed to return a different time given the same ms timestamp.
  */
 public class UUIDGen
 {
@@ -46,16 +44,41 @@ public class UUIDGen
     private static final long CLOCK = new Random(System.currentTimeMillis()).nextLong();
     private static int clockOffsetTicker = 0;
     
-    private final long clock;
-    private long lastMs = 0;
-    private long lastNano = 0;
+    // placement of this singleton is important.  It needs to be instantiated *AFTER* the other statics.
+    private static final UUIDGen instance = new UUIDGen();
     
-    public UUIDGen() {
+    private final long clock;
+    private long lastNanos;
+    
+    private UUIDGen() {
+        // make sure someone didn't whack the clock by changing the order of instantiation.
+        if (CLOCK == 0) throw new RuntimeException("singleton instantiation is misplaced.");
+        
         clock = CLOCK + clockOffsetTicker++;
-        lastNano = System.nanoTime() / 100;
     }
     
-    public long getClockSeqAndNode() {
+    /**
+     * Converts a milliseconds-since-epoch timestamp into the 16 byte representation
+     * of a type 1 UUID (a time-based UUID).
+     * 
+     * @param timeMillis
+     * @return a type 1 UUID represented as a byte[]
+     */
+    public static byte[] getTimeUUIDBytes(long timeMillis) {
+        long msb = instance.createTime(timeMillis), lsb = instance.getClockSeqAndNode();
+        byte[] uuidBytes = new byte[16];
+        
+        for (int i = 0; i < 8; i++) {
+            uuidBytes[i] = (byte) (msb >>> 8 * (7 - i));
+        }
+        for (int i = 8; i < 16; i++) {
+            uuidBytes[i] = (byte) (lsb >>> 8 * (7 - i));
+        }
+        return uuidBytes;
+    }
+    
+    // todo: could cache value if we assume node doesn't change.
+    private synchronized long getClockSeqAndNode() {
         long lsb = 0;
         lsb |= (clock & 0x3f00000000000000L) >>> 56; // was 58?
         lsb |= 0x0000000000000080;
@@ -64,23 +87,24 @@ public class UUIDGen
         return lsb;
     }
     
-    public long createTime(long when) {
+    // needs to return two different values for the same when.
+    // we can generate at most 10k UUIDs per ms.
+    private synchronized long createTime(long when) {
         long nanosSince = (when - START_EPOCH) * 10000;
-        long nanos = System.nanoTime() / 100;
-        // this trick breaks down if we try to ask for more than 9999 uuids per ms.
-        if (lastMs == System.currentTimeMillis())
-            nanosSince += nanos-lastNano;
+        if (nanosSince > lastNanos)
+            lastNanos = nanosSince;
         else
-            lastNano = nanos;
+            nanosSince = ++lastNanos;
+        
         long msb = 0L; 
         msb |= (0x00000000ffffffffL & nanosSince) << 32;
         msb |= (0x0000ffff00000000L & nanosSince) >>> 16; 
         msb |= (0xffff000000000000L & nanosSince) >>> 48;
-        msb &= 0xffffffffffff1fffL; // sets the version to 1.
-        lastMs = when;
+        msb |= 0x0000000000001000L; // sets the version to 1.
         return msb;
     }
     
+    // todo: could exploit caching.
     private static long makeNode() {
         // ideally, we'd use the MAC address, but java doesn't expose that.
         try {
@@ -91,31 +115,13 @@ public class UUIDGen
             for (int i = 0; i < Math.min(6, hash.length); i++)
                 node |= (0x00000000000000ff & (long)hash[i]) << (5-i)*8;
             assert (0xff00000000000000L & node) == 0;
+            return node;
         } catch (UnknownHostException ex) {
             throw new RuntimeException(ex);
         } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
-        return 0;
     }
-    
-    
-    public static void main(String args[]) {
-        UUIDGen gen = new UUIDGen();
-        int count = 1000;
-        long[] times = new long[count];
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < count; i++)
-            times[i] = gen.createTime(System.currentTimeMillis());
-        long stop = System.currentTimeMillis();
-        for (int i = 1; i < count; i++)
-            System.out.println(times[i]-times[i-1]);
-        System.out.println(String.format("Generated in %d ms", stop-start));
-        
-//        for (int i = 0; i < 1000000; i++)
-//            System.out.println(String.format("%d %d", System.currentTimeMillis(), System.nanoTime()));
-    }
-    
 }
 
 // for the curious, here is how I generated START_EPOCH

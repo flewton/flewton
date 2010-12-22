@@ -24,6 +24,7 @@
     <path id="java.classpath">
         <fileset dir="${lib.dir}">
             <include name="*.jar" />
+            <exclude name="junit*.jar"/>
         </fileset>
     </path>
 
@@ -70,7 +71,10 @@
         <copy todir="${dist.dir}" file="README.textile" />
         <copy todir="${dist.dir}" file="flewton.cfg" />
         <copy todir="${dist.dir}/lib" flatten="true">
-            <fileset dir="${basedir}/lib/" excludes="sources/" />
+            <fileset dir="${basedir}/lib/">
+                <exclude name="sources/"/>
+                <exclude name="junit*.jar"/>
+            </fileset>
         </copy>
     </target>
 
@@ -97,6 +101,10 @@
     <target name="clean">
         <delete dir="${build.dir}" />
         <delete dir="${dist.dir}" />
+    </target>
+    
+    <target name="scrub-lib">
+        <delete dir="${basedir}/lib/cachedir"/>
     </target>
 </project>
 
