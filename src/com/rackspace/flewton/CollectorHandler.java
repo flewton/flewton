@@ -73,6 +73,7 @@ public class CollectorHandler extends SimpleChannelHandler {
                         logger.warn(String.format("Netflow v%d is not supported", version));
                         if (logger.isDebugEnabled())
                             logPacket(e.getRemoteAddress(), buff.duplicate());
+                        return;
                     } else
                         throw new UnsupportedOperationException(
                                 String.format("Netflow v%d is not supported", version));
@@ -83,9 +84,9 @@ public class CollectorHandler extends SimpleChannelHandler {
         }
         
         // Send record to backends
-        if (record != null)
-            for (IBackend backend : backEnds)
-                backend.write(record);
+        assert record != null;
+        for (IBackend backend : backEnds)
+            backend.write(record);
     }
     
     // dumps the contents of a buffer
