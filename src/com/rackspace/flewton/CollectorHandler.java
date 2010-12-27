@@ -33,6 +33,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rackspace.flewton.backend.IBackend;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -42,13 +43,12 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.rackspace.flewton.backend.AbstractBackend;
 import com.rackspace.flewton.backend.NullBackend;
 
 public class CollectorHandler extends SimpleChannelHandler {
     private static final Logger logger = LoggerFactory.getLogger(CollectorHandler.class);
     private static final boolean logUnhandledVersions = Boolean.parseBoolean(System.getProperty("flewton.log_unhandled_versions", "false"));
-    private static List<AbstractBackend> backEnds = new ArrayList<AbstractBackend>();
+    private static List<IBackend> backEnds = new ArrayList<IBackend>();
     private static final int HEX_LENGTH = 16;
     
     static {
@@ -84,7 +84,7 @@ public class CollectorHandler extends SimpleChannelHandler {
         
         // Send record to backends
         if (record != null)
-            for (AbstractBackend backend : backEnds)
+            for (IBackend backend : backEnds)
                 backend.write(record);
     }
     
@@ -132,7 +132,7 @@ public class CollectorHandler extends SimpleChannelHandler {
         //e.getChannel().close();
     }
     
-    public static void setBackends(List<AbstractBackend> backends) {
+    public static void setBackends(List<IBackend> backends) {
         backEnds = backends;
     }
 }
