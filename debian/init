@@ -18,6 +18,7 @@ NAME=flewton
 SCRIPTNAME=/etc/init.d/$NAME
 PIDFILE=/var/run/jsvc.pid
 DAEMON=/usr/bin/jsvc
+EXTRA_ARGS=""
 
 [ -x "$DAEMON" ] || exit 0
 [ -r /usr/share/java/commons-daemon.jar ] || exit 0
@@ -57,11 +58,8 @@ if [ -z "$JAVA_HOME" ]; then
 fi
 
 # Arguments to commons-daemon wrapper
-DAEMON_ARGS="-home $JAVA_HOME \
-    -outfile SYSLOG \
-    -errfile SYSLOG \
-    -cp $CLASSPATH \
-    -Dlog4j.configuration=file:///etc/flewton/log4j.properties \
+DAEMON_ARGS="-home $JAVA_HOME -outfile SYSLOG -errfile SYSLOG -cp $CLASSPATH \
+    -Dlog4j.configuration=file:///etc/flewton/log4j.properties $EXTRA_ARGS \
     com.rackspace.flewton.CollectorServer"
 
 # Load the VERBOSE setting and other rcS variables
