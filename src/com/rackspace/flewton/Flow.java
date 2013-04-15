@@ -31,6 +31,11 @@ package com.rackspace.flewton;
 import java.net.InetAddress;
 
 public class Flow {
+    private static final String FLOW_TAG  = "flow";
+    private static final String ATTR_TAG  = "attribute";
+    private static final String NAME_TAG  = "name";
+    private static final String VALUE_TAG = "value";
+
     public InetAddress sourceAddr;
     public InetAddress destAddr;
     public InetAddress nextHop;
@@ -47,6 +52,52 @@ public class Flow {
     public byte tos;
     public short sourceAS;
     public short destAS;
-    
+
     public long timestampCalculated;
+
+    private static String wrapAttribute(String name, Object value) {
+        return String.format(
+                "<%s><%s>%s</%s><%s>%s</%s></%s>",
+                ATTR_TAG,
+                NAME_TAG,
+                name,
+                NAME_TAG,
+                VALUE_TAG,
+                value,
+                VALUE_TAG,
+                ATTR_TAG);
+    }
+
+    /**
+     * Serialize flow to XML string.
+     * 
+     * @return XML representation of flow.
+     */
+    public String toXmlString() {
+        StringBuilder out = new StringBuilder();
+
+        out.append('<').append(FLOW_TAG).append('>');
+
+        out.append(wrapAttribute("sourceAddr", sourceAddr));
+        out.append(wrapAttribute("destAddr", destAddr));
+        out.append(wrapAttribute("nextHop", nextHop));
+        out.append(wrapAttribute("snmpIn", snmpIn));
+        out.append(wrapAttribute("snmpOut", snmpOut));
+        out.append(wrapAttribute("numPackets", numPackets));
+        out.append(wrapAttribute("numOctets", numOctets));
+        out.append(wrapAttribute("timeFirst", timeFirst));
+        out.append(wrapAttribute("timeLast", timeLast));
+        out.append(wrapAttribute("sourcePort", sourcePort));
+        out.append(wrapAttribute("destPort", destPort));
+        out.append(wrapAttribute("tcpFlags", tcpFlags));
+        out.append(wrapAttribute("protocol", protocol));
+        out.append(wrapAttribute("tos", tos));
+        out.append(wrapAttribute("sourceAS", sourceAS));
+        out.append(wrapAttribute("destAS", destAS));
+        out.append(wrapAttribute("timestampCalculated", timestampCalculated));
+
+        out.append("</").append(FLOW_TAG).append('>');
+
+        return out.toString();
+    }
 }
