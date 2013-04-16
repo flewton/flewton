@@ -35,9 +35,28 @@ import java.util.List;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 public abstract class AbstractRecord {
+    private static final String FLOWS_TAG = "flows";
+
     public List<Flow> flows = new ArrayList<Flow>();
-    
+
     public AbstractRecord(ChannelBuffer buffer) {
-        
+    }
+
+    /**
+     * Serialize record to an XML string.
+     * 
+     * @return XML representation of record.
+     */
+    public String toXmlString() {
+        StringBuilder out = new StringBuilder();
+        out.append('<').append(FLOWS_TAG).append('>');
+
+        for (Flow flow : flows) {
+            out.append(flow.toXmlString());
+        }
+
+        out.append("</").append(FLOWS_TAG).append('>');
+
+        return out.toString();
     }
 }

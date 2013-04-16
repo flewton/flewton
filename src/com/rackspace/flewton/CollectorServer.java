@@ -68,6 +68,7 @@ public class CollectorServer {
     }
     
     private int remotePort;
+    private String listenAddress;
 
     private static List<IBackend> createBackends(String[] backendNames, HierarchicalINIConfiguration config) throws ConfigError {
         List<IBackend> backends = new ArrayList<IBackend>();
@@ -171,23 +172,32 @@ public class CollectorServer {
     public void start() {
         DatagramChannelFactory f = new NioDatagramChannelFactory(Executors.newCachedThreadPool());
         ConnectionlessBootstrap bootstrap = new ConnectionlessBootstrap(f);
-        
+
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws Exception {
                 return Channels.pipeline(new CollectorHandler());
             }
         });
-        
+
         // Disable broadcast
         bootstrap.setOption("broadcast", false);
-        
-        // Allow packets as large as 2048 bytes (default is 768)
-        bootstrap.setOption("receiveBufferSizePredictorFactory",
-                            new FixedReceiveBufferSizePredictorFactory(2048));
 
-        logger.info("Binding to UDP 0.0.0.0:{}", remotePort);
-        bootstrap.bind(new InetSocketAddress(remotePort));
+        // Allow packets as large as 2048 bytes (default is 768)
+        bootstrap.setOption("receiveBufferSizePredictorFactory", new FixedReceiveBufferSizePredictorFactory(2048));
+
+        InetSocketAddress sockAddress = null;
+
+        if (getListenAddress() == null) {
+            logger.info("Binding to UDP 0.0.0.0:{}", getListenPort());
+            sockAddress = new InetSocketAddress(getListenPort());
+        }
+        else {
+            logger.info("Binding to UDP {}:{}", getListenAddress(), getListenPort());
+            sockAddress = new InetSocketAddress(getListenAddress(), getListenPort());
+        }
+
+        bootstrap.bind(sockAddress);
     }
     
     /* jsvc */
@@ -200,4 +210,19 @@ public class CollectorServer {
         
     }
 
+	public int getListenPort() {
+		return remotePort;
+	}
+
+	public void setListenPort(int remotePort) {
+		this.remotePort = remotePort;
+	}
+
+	public String getListenAddress() {
+		return listenAddress;
+	}
+
+	public void setListenAddress(String listenAddress) {
+		this.listenAddress = listenAddress;
+	}
 }

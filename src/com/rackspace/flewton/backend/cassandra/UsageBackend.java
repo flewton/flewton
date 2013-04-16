@@ -35,8 +35,7 @@ import com.rackspace.flewton.backend.AbstractBackend;
 import com.rackspace.flewton.util.HostResolver;
 import static com.rackspace.flewton.util.HostResolver.int2ByteBuffer;
 
-import static com.eaio.uuid.UUIDGen.createTime;
-import static com.eaio.uuid.UUIDGen.getClockSeqAndNode;
+import com.rackspace.flewton.util.UUIDGen;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.Column;
 import org.apache.cassandra.thrift.ColumnOrSuperColumn;
@@ -96,6 +95,7 @@ public class UsageBackend extends AbstractBackend {
     public void write(AbstractRecord record) {
         final long ts = System.currentTimeMillis();
         final Map<ByteBuffer, Map<String, List<Mutation>>> mutations = makeMutations(record, resolver, ts);
+        if (mutations.size() == 0) return; // nothing to do.
         long retry = 0; // indicates how many MS to sleep before retrying.
         
         // first try.
@@ -212,31 +212,10 @@ public class UsageBackend extends AbstractBackend {
      * of a type 1 UUID (a time-based UUID).
      * 
      * @param timeMillis
-     * @return a type 1 UUID represented as a byte[]
-     */
-    protected static byte[] getTimeUUIDBytes(long timeMillis) {
-        long msb = createTime(timeMillis), lsb = getClockSeqAndNode();
-        byte[] uuidBytes = new byte[16];
-        
-        for (int i = 0; i < 8; i++) {
-            uuidBytes[i] = (byte) (msb >>> 8 * (7 - i));
-        }
-        for (int i = 8; i < 16; i++) {
-            uuidBytes[i] = (byte) (lsb >>> 8 * (7 - i));
-        }
-        
-        return uuidBytes;
-    }
-    
-    /**
-     * Converts a milliseconds-since-epoch timestamp into the 16 byte representation
-     * of a type 1 UUID (a time-based UUID).
-     * 
-     * @param timeMillis
      * @return a type 1 UUID represented as a ByteBuffer
      */
     protected static ByteBuffer getTimeUUIDByteBuffer(long timeMillis) {
-        return ByteBuffer.wrap(getTimeUUIDBytes(timeMillis));
+        return ByteBuffer.wrap(UUIDGen.getTimeUUIDBytes(timeMillis));
     }
     
     private Cassandra.Client borrowClient() {
