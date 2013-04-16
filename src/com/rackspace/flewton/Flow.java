@@ -78,9 +78,9 @@ public class Flow {
 
         out.append('<').append(FLOW_TAG).append('>');
 
-        out.append(wrapAttribute("sourceAddr", sourceAddr));
-        out.append(wrapAttribute("destAddr", destAddr));
-        out.append(wrapAttribute("nextHop", nextHop));
+        out.append(wrapAttribute("sourceAddr", sourceAddr.getHostAddress()));
+        out.append(wrapAttribute("destAddr", destAddr.getHostAddress()));
+        out.append(wrapAttribute("nextHop", nextHop.getHostAddress()));
         out.append(wrapAttribute("snmpIn", snmpIn));
         out.append(wrapAttribute("snmpOut", snmpOut));
         out.append(wrapAttribute("numPackets", numPackets));
