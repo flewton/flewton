@@ -76,19 +76,19 @@ public class Recordv5 extends AbstractRecord {
                 // This should never happen; 4 bytes will always be legal IPv4.
                 throw new RuntimeException("Failed parsing IPv4 address!", e);
             }
-            flow.snmpIn = flowData.readShort();
-            flow.snmpOut = flowData.readShort();
-            flow.numPackets = flowData.readInt();
-            flow.numOctets = flowData.readInt();
-            flow.timeFirst = flowData.readInt();
-            flow.timeLast = flowData.readInt();
-            flow.sourcePort = flowData.readShort();
-            flow.destPort = flowData.readShort();
+            flow.snmpIn = flowData.readUnsignedShort();
+            flow.snmpOut = flowData.readUnsignedShort();
+            flow.numPackets = flowData.readUnsignedInt();
+            flow.numOctets = flowData.readUnsignedInt();
+            flow.timeFirst = flowData.readUnsignedInt();
+            flow.timeLast = flowData.readUnsignedInt();
+            flow.sourcePort = flowData.readUnsignedShort();;
+            flow.destPort = flowData.readUnsignedShort();
             flow.tcpFlags = flowData.readByte();
             flow.protocol = flowData.readByte();
             flow.tos = flowData.readByte();
-            flow.sourceAS = flowData.readShort();
-            flow.destAS = flowData.readShort();
+            flow.sourceAS = flowData.readUnsignedShort();
+            flow.destAS = flowData.readUnsignedShort();
             flow.timestampCalculated = millisSinceEpoch + (flow.timeLast - sys_uptime);
             
             flows.add(flow);

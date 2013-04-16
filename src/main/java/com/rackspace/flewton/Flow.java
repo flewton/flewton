@@ -39,19 +39,19 @@ public class Flow {
     public InetAddress sourceAddr;
     public InetAddress destAddr;
     public InetAddress nextHop;
-    public short snmpIn;
-    public short snmpOut;
-    public int numPackets;
-    public int numOctets;
-    public int timeFirst;
-    public int timeLast;
-    public short sourcePort;
-    public short destPort;
+    public int snmpIn;
+    public int snmpOut;
+    public long numPackets;
+    public long numOctets;
+    public long timeFirst;
+    public long timeLast;
+    public int sourcePort;
+    public int destPort;
     public byte tcpFlags;
     public byte protocol;
     public byte tos;
-    public short sourceAS;
-    public short destAS;
+    public int sourceAS;
+    public int destAS;
 
     public long timestampCalculated;
 
