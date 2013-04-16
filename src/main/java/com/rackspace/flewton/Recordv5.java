@@ -52,8 +52,8 @@ public class Recordv5 extends AbstractRecord {
         super(buffer);
         
         ChannelBuffer header = getHeader(buffer);
-        int count = header.readShort();
-        long sys_uptime = header.readInt();
+        int count = header.readUnsignedShort();
+        long sys_uptime = header.readUnsignedInt();
         // unix_secs + unix_nsecs (converted to millis)
         long millisSinceEpoch = (readLong(4, header) * 1000) + (readLong(4, header) / 1000000);
   
