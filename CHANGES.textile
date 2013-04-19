@@ -4,3 +4,4 @@ h2. 1.1
 * moved (bitrot )cassandra backend to examples
 * moved Python and Javascript sample backend to examples
 * replaced ant w/ maven for build; removed embedded dependencies
+* create OSGi bundle
