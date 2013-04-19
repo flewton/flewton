@@ -6,7 +6,7 @@ h2. Building / Installing
 
 Building Flewton requires that you have "Maven":http://maven.apache.org/ installed.  To build a self-contained executable jar file run:
 
-bc.
+bc. 
 mvn clean compile assembly:single
 
 h2. Configuration
