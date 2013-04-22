@@ -1,3 +1,4 @@
 
 * Include a (tested )v9 protocol decoder.
 * Unit tests for ExtBackendFactory that exercise loading from external directories.
+* Add a search path to load script backends from jar.
